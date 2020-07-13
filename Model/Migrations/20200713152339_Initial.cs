@@ -11,7 +11,7 @@ namespace Model.Migrations
                 columns: table => new
                 {
                     ISOLandCode = table.Column<string>(maxLength: 2, nullable: false),
-                    NISLandCode = table.Column<string>(maxLength: 3, nullable: false),
+                    NISLandCode = table.Column<string>(maxLength: 3, nullable: true),
                     Naam = table.Column<string>(maxLength: 50, nullable: false),
                     AantalInwoners = table.Column<int>(nullable: false),
                     Oppervlakte = table.Column<float>(nullable: false)
@@ -58,37 +58,37 @@ namespace Model.Migrations
                 name: "LandsTalen",
                 columns: table => new
                 {
-                    LandCode = table.Column<string>(maxLength: 2, nullable: false),
-                    TaalCode = table.Column<string>(maxLength: 2, nullable: false),
-                    LandISOLandCode = table.Column<string>(nullable: true),
-                    TaalISOTaalCode = table.Column<string>(nullable: true)
+                    ISOLandCode = table.Column<string>(maxLength: 2, nullable: false),
+                    ISOTaalCode = table.Column<string>(maxLength: 2, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LandsTalen", x => new { x.LandCode, x.TaalCode });
+                    table.PrimaryKey("PK_LandsTalen", x => new { x.ISOLandCode, x.ISOTaalCode });
                     table.ForeignKey(
-                        name: "FK_LandsTalen_Landen_LandISOLandCode",
-                        column: x => x.LandISOLandCode,
+                        name: "FK_LandsTalen_Landen_ISOLandCode",
+                        column: x => x.ISOLandCode,
                         principalTable: "Landen",
                         principalColumn: "ISOLandCode",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LandsTalen_Talen_TaalISOTaalCode",
-                        column: x => x.TaalISOTaalCode,
+                        name: "FK_LandsTalen_Talen_ISOTaalCode",
+                        column: x => x.ISOTaalCode,
                         principalTable: "Talen",
                         principalColumn: "ISOTaalCode",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LandsTalen_LandISOLandCode",
-                table: "LandsTalen",
-                column: "LandISOLandCode");
+                name: "IX_Landen_NISLandCode",
+                table: "Landen",
+                column: "NISLandCode",
+                unique: true,
+                filter: "[NISLandCode] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LandsTalen_TaalISOTaalCode",
+                name: "IX_LandsTalen_ISOTaalCode",
                 table: "LandsTalen",
-                column: "TaalISOTaalCode");
+                column: "ISOTaalCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Steden_ISOLandCode",

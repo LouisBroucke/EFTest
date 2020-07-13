@@ -9,7 +9,7 @@ using Model.Repositories;
 namespace Model.Migrations
 {
     [DbContext(typeof(EFTestContext))]
-    [Migration("20200713145524_Initial")]
+    [Migration("20200713152339_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,7 +30,6 @@ namespace Model.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NISLandCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(3)")
                         .HasMaxLength(3);
 
@@ -44,30 +43,26 @@ namespace Model.Migrations
 
                     b.HasKey("ISOLandCode");
 
+                    b.HasIndex("NISLandCode")
+                        .IsUnique()
+                        .HasFilter("[NISLandCode] IS NOT NULL");
+
                     b.ToTable("Landen");
                 });
 
             modelBuilder.Entity("Model.Entities.LandTaal", b =>
                 {
-                    b.Property<string>("LandCode")
+                    b.Property<string>("ISOLandCode")
                         .HasColumnType("nvarchar(2)")
                         .HasMaxLength(2);
 
-                    b.Property<string>("TaalCode")
+                    b.Property<string>("ISOTaalCode")
                         .HasColumnType("nvarchar(2)")
                         .HasMaxLength(2);
 
-                    b.Property<string>("LandISOLandCode")
-                        .HasColumnType("nvarchar(2)");
+                    b.HasKey("ISOLandCode", "ISOTaalCode");
 
-                    b.Property<string>("TaalISOTaalCode")
-                        .HasColumnType("nvarchar(2)");
-
-                    b.HasKey("LandCode", "TaalCode");
-
-                    b.HasIndex("LandISOLandCode");
-
-                    b.HasIndex("TaalISOTaalCode");
+                    b.HasIndex("ISOTaalCode");
 
                     b.ToTable("LandsTalen");
                 });
@@ -121,11 +116,15 @@ namespace Model.Migrations
                 {
                     b.HasOne("Model.Entities.Land", "Land")
                         .WithMany("LandsTalen")
-                        .HasForeignKey("LandISOLandCode");
+                        .HasForeignKey("ISOLandCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Model.Entities.Taal", "Taal")
                         .WithMany("TaalLanden")
-                        .HasForeignKey("TaalISOTaalCode");
+                        .HasForeignKey("ISOTaalCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Model.Entities.Stad", b =>

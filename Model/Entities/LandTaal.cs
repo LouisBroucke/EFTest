@@ -7,8 +7,8 @@ namespace Model.Entities
     public class LandTaal
     {
         //Properties
-        public string LandCode { get; set; }
-        public string TaalCode { get; set; }
+        public string ISOLandCode { get; set; }
+        public string ISOTaalCode { get; set; }
 
         //Navigation Properties
         public virtual Land Land { get; set; }

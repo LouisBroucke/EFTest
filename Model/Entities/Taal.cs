@@ -10,5 +10,8 @@ namespace Model.Entities
         public string ISOTaalCode { get; set; }
         public string NaamNL { get; set; }
         public string NaamTaal { get; set; }
+
+        //Navigation Properties
+        public virtual ICollection<LandTaal> TaalLanden { get; set; } = new List<LandTaal>();
     }
 }

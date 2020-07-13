@@ -9,5 +9,9 @@ namespace Model.Entities
         //Properties
         public string LandCode { get; set; }
         public string TaalCode { get; set; }
+
+        //Navigation Properties
+        public virtual Land Land { get; set; }
+        public virtual Taal Taal { get; set; }
     }
 }

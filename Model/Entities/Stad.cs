@@ -10,5 +10,8 @@ namespace Model.Entities
         public int StadId { get; set; }
         public string Naam { get; set; }
         public string ISOLandCode { get; set; }
+
+        //Navigation Properties
+        public virtual Land Land { get; set; }
     }
 }

@@ -48,31 +48,239 @@ namespace UI
                 switch (keuze)
                 {
                     case "A":
-                        service.ToonAlleLanden();
+                        ToonAlleLanden();
                         break;
                     case "B":
-                        service.ToonEenLand();
+                        ToonEenLand();
                         break;
                     case "C":
-                        service.ToonLandMetSteden();
+                        ToonLandMetSteden();
                         break;
                     case "D":
-                        service.ToonLandMetTalen();
+                        ToonLandMetTalen();
                         break;
                     case "E":
-                        service.WijzigInwoners();
+                        AantalInwonersWijzigen();
                         break;
                     case "F":
-                        service.WijzigOppervlakte();
+                        OppervlakteWijzigen();
                         break;
                     case "G":
-                        service.StadToevoegen();
+                        StedenToevoegen();
                         break;
                     case "H":
-                        service.StadVerwijderen();
+                        StedenVerwijderen();
                         break;
                 }
             }
+        }
+
+        static void ToonAlleLanden()
+        {
+            Console.WriteLine("Lijst van landen");
+            Console.WriteLine("----------------");
+
+            foreach (var land in service.FindAlleLanden())
+            {
+                Console.WriteLine($"{land.ISOLandCode} {land.Naam}  {land.AantalInwoners}   {land.Oppervlakte}");
+            }
+
+            Console.WriteLine();
+        }
+
+        static void ToonLandMetTalen()
+        {
+            Console.WriteLine("Lijst van talen van een land");
+            Console.WriteLine("----------------------------");
+            Console.WriteLine("Geef een landcode in: ");
+
+            var landCode = Console.ReadLine().ToUpper();
+            Console.WriteLine();
+            var result = service.FindEenLandMetTalen(landCode);
+            var land = result.Item2;
+            var talen = result.Item1;
+
+            if (land != null)
+            {
+                Console.WriteLine($"Talen {land.Naam}:");
+
+                foreach (var landTaal in land.LandsTalen)
+                {
+                    Console.WriteLine(landTaal.Taal.NaamNL);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+            Console.WriteLine();
+        }
+
+        static void ToonLandMetSteden()
+        {
+            Console.WriteLine("Lijst van steden in land");
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Geef een landcode in: ");
+
+            var landCode = Console.ReadLine().ToUpper();
+            Console.WriteLine();
+            var land = service.FindEenLandMetSteden(landCode);
+
+            if (land != null)
+            {
+                Console.WriteLine($"Steden {land.Naam}: ");
+
+                foreach (var stad in land.Steden)
+                {
+                    Console.WriteLine(stad.Naam);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+            Console.WriteLine();
+        }
+
+        static void ToonEenLand()
+        {
+            Console.WriteLine("Gegevens van een land");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Geef een landcode in: ");
+
+            var landCode = Console.ReadLine().ToUpper();
+            Console.WriteLine();
+            var land = service.FindEenLand(landCode);
+
+            if (land != null)
+            {
+                Console.WriteLine($"Gegevens {land.Naam}: ");
+                Console.WriteLine($"Aantal inwoners: {land.AantalInwoners}");
+                Console.WriteLine($"Oppervlakte: {land.Oppervlakte}");
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+            Console.WriteLine();
+        }
+
+        static void OppervlakteWijzigen()
+        {
+            Console.WriteLine("Wijzig oppervlakte");
+            Console.WriteLine("--------------");
+            Console.WriteLine("Geef een landcode in: ");
+            var landCode = Console.ReadLine().ToUpper();
+            Console.WriteLine();
+
+            var geselecteerdLand = service.FindEenLand(landCode);
+
+            if (geselecteerdLand != null)
+            {
+                Console.WriteLine($"Land: {geselecteerdLand.Naam}");
+                Console.WriteLine($"Huidige oppervlakte: {geselecteerdLand.Oppervlakte}");
+                Console.WriteLine("Nieuwe oppervlakte:");
+
+                if (float.TryParse(Console.ReadLine(), out float nieuweOppervlakte))
+                {
+                    service.WijzigOppervlakte(landCode, nieuweOppervlakte);
+                }
+                else
+                {
+                    Console.WriteLine("Tik een getal!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+        }
+
+        static void AantalInwonersWijzigen()
+        {
+            Console.WriteLine("Wijzig inwoners");
+            Console.WriteLine("--------------");
+            Console.WriteLine("Geef een landcode in: ");
+            var landCode = Console.ReadLine().ToUpper();
+            Console.WriteLine();
+
+            var geselecteerdLand = service.FindEenLand(landCode);
+
+            if (geselecteerdLand != null)
+            {
+                Console.WriteLine($"Land: {geselecteerdLand.Naam}");
+                Console.WriteLine($"Huidig aantal inwoners: {geselecteerdLand.AantalInwoners}");
+                Console.WriteLine("Nieuw aantal inwoners:");
+
+                if (int.TryParse(Console.ReadLine(), out int nieuwAantalInwoners))
+                {
+                    service.WijzigInwoners(landCode, nieuwAantalInwoners);
+                }
+                else
+                {
+                    Console.WriteLine("Tik een getal!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+        }
+
+        static void StedenToevoegen()
+        {
+            Console.WriteLine("Stad toevoegen");
+            Console.WriteLine("--------------");
+            Console.WriteLine("Geef een landcode in: ");
+            var landCode = Console.ReadLine().ToUpper();
+
+            if (service.FindEenLand(landCode) != null)
+            {
+                Console.WriteLine("Welke stad wil je toevoegen?");
+                var naam = Console.ReadLine();
+
+                var stad = new Stad
+                {
+                    ISOLandCode = landCode,
+                    Naam = naam
+                };
+
+                try
+                {
+                    service.StadToevoegen(stad);
+                }
+                catch (Exception)
+                {
+
+                    Console.WriteLine("Naam is te lang");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Land niet gevonden");
+            }
+            Console.WriteLine();
+        }
+
+        static void StedenVerwijderen()
+        {
+            Console.WriteLine("Stad verwijderen");
+            Console.WriteLine("----------------");
+            Console.WriteLine("Welke stad wil je verwijderen?");
+            var naamStad = Console.ReadLine().ToUpper();
+            Console.WriteLine("Wat is de landcode van deze stad?");
+            var landCodeStad = Console.ReadLine().ToUpper();
+
+            try
+            {
+                service.StadVerwijderen(naamStad, landCodeStad);
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine("Stad niet gevonden");
+            }
+            Console.WriteLine();
         }
     }
 }
